@@ -1,3 +1,12 @@
+go-utorrent
+=====
+
+A lightweight uTorrent library for Go
+
+Example
+-------
+
+```go
 package main
 
 import (
@@ -9,7 +18,7 @@ import (
 
 func main() {
 	c, err := utorrent.NewClient(&utorrent.Client{
-		API:      "http://192.168.1.163:8085/gui",
+		API:      "http://localhost:8085/gui",
 		Username: "admin",
 		Password: os.Getenv("TORRENT_PASSWORD"),
 	})
@@ -30,3 +39,5 @@ func main() {
 
 	os.Exit(0)
 }
+
+```
