@@ -4,7 +4,7 @@
 BUILD_TYPE?=build
 
 # Everything; this is the default behavior
-all: format library examples
+all: format library
 
 # go fmt ftw
 format:
@@ -14,6 +14,7 @@ library:
 	go $(BUILD_TYPE)
 
 # Building Examples
+example: examples
 examples:
 	for example in $$(ls examples); do \
 		go $(BUILD_TYPE) ./examples/$$example; \

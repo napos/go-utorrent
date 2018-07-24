@@ -22,11 +22,23 @@ func main() {
 	torrents, err := c.GetTorrents()
 	if err != nil {
 		fmt.Printf("%s\n", err.Error())
+		os.Exit(1)
 	}
 
 	for _, torrent := range torrents {
 		fmt.Printf("Name: %s, Added: %d, Completed: %d, Filepath: %s\n", torrent.Name, torrent.AddedOn, torrent.CompletedOn, torrent.FilePath)
 	}
+
+	fmt.Printf("\n")
+	fmt.Printf("Getting single torrent..\n")
+
+	torrent, err := c.GetTorrent(torrents[0].Hash)
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Printf("Name: %s, Added: %d, Completed: %d, Filepath: %s\n", torrent.Name, torrent.AddedOn, torrent.CompletedOn, torrent.FilePath)
 
 	os.Exit(0)
 }

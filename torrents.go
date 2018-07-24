@@ -101,3 +101,93 @@ func (c *Client) GetTorrents() ([]Torrent, error) {
 
 	return torrents.Torrents, err
 }
+
+func (c *Client) GetTorrent(hash string) (Torrent, error) {
+	torrents, err := c.GetTorrents()
+	if err != nil {
+		return Torrent{}, err
+	}
+
+	for _, torrent := range torrents {
+		if torrent.Hash == hash {
+			return torrent, nil
+		}
+	}
+
+	return Torrent{}, fmt.Errorf("Torrent [%s] not found", hash)
+}
+
+func (c *Client) PauseTorrent(hash string) error {
+	err := c.action("pause", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error pausing torrent: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) UnPauseTorrent(hash string) error {
+	err := c.action("unpause", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error unpausing torrent: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) StartTorrent(hash string) error {
+	err := c.action("start", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error starting torrent: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) StopTorrent(hash string) error {
+	err := c.action("stop", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error stopping torrent: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) RecheckTorrent(hash string) error {
+	err := c.action("recheck", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error rechecking torrent: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) RemoveTorrent(hash string) error {
+	err := c.action("remove", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error removing torrent: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) RemoveTorrentAndData(hash string) error {
+	err := c.action("removedata", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error removing torrent and data: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) AddTorrent(url string) error {
+	res, err := c.get(fmt.Sprintf("/?action=add-url&s=%s", url), nil)
+	if err != nil {
+		return fmt.Errorf("Error adding torrent: %s", err)
+	}
+	if res.StatusCode != 200 {
+		return fmt.Errorf("Error adding torrent: status code: %d", res.StatusCode)
+	}
+
+	return nil
+}

@@ -60,3 +60,14 @@ func (c *Client) get(path string, headers *http.Header) (*http.Response, error) 
 func (c *Client) delete(path string, headers *http.Header) (*http.Response, error) {
 	return c.request("DELETE", path, nil, headers)
 }
+
+func (c *Client) action(action string, hash string, headers *http.Header) error {
+	res, err := c.get(fmt.Sprintf("/?action=%s&hash=%s", action, hash), headers)
+	if err != nil {
+		return err
+	}
+	if res.StatusCode != 200 {
+		return fmt.Errorf("status code: %d", res.StatusCode)
+	}
+	return nil
+}
