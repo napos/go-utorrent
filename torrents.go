@@ -281,3 +281,39 @@ func (c *Client) SetTorrentSeedTime(hash string, time int) error {
 
 	return nil
 }
+
+func (c *Client) QueueTop(hash string) error {
+	err := c.action("queuetop", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error setting torrent queue priority: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) QueueUp(hash string) error {
+	err := c.action("queueup", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error setting torrent queue priority: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) QueueDown(hash string) error {
+	err := c.action("queuedown", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error setting torrent queue priority: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (c *Client) QueueBottom(hash string) error {
+	err := c.action("queuebottom", hash, nil)
+	if err != nil {
+		return fmt.Errorf("Error setting torrent queue priority: %s", err.Error())
+	}
+
+	return nil
+}

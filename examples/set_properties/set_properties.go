@@ -50,5 +50,33 @@ func main() {
 		os.Exit(1)
 	}
 
+	fmt.Printf("Setting torrent queue priority..\n")
+	err = c.QueueTop("E4BE9E4DB876E3E3179778B03E906297BE5C8DBE")
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Printf("Setting torrent queue priority..\n")
+	err = c.QueueDown("E4BE9E4DB876E3E3179778B03E906297BE5C8DBE")
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Printf("Setting torrent queue priority..\n")
+	err = c.QueueUp("E4BE9E4DB876E3E3179778B03E906297BE5C8DBE")
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Printf("Setting torrent queue priority..\n")
+	err = c.QueueBottom("E4BE9E4DB876E3E3179778B03E906297BE5C8DBE")
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+		os.Exit(1)
+	}
+
 	os.Exit(0)
 }
