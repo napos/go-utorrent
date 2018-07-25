@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/naposproject/go-utorrent"
 )
@@ -14,22 +13,23 @@ func main() {
 		Username: "admin",
 		Password: os.Getenv("TORRENT_PASSWORD"),
 	})
+
 	if err != nil {
 		fmt.Printf("%s\n", err.Error())
 	}
 
-	fmt.Printf("Pausing torrent..\n")
-	err = c.PauseTorrent("E4BE9E4DB876E3E3179778B03E906297BE5C8DBE")
+	fmt.Printf("Adding torrent via URL..\n")
+	err = c.AddTorrent("http://releases.ubuntu.com/18.04/ubuntu-18.04-desktop-amd64.iso.torrent")
 	if err != nil {
 		fmt.Printf("%s\n", err.Error())
+		os.Exit(1)
 	}
 
-	time.Sleep(10 * time.Second)
-
-	fmt.Printf("Unpausing torrent..\n")
-	err = c.UnPauseTorrent("E4BE9E4DB876E3E3179778B03E906297BE5C8DBE")
+	fmt.Printf("Adding torrent via file..\n")
+	err = c.AddTorrentFile("/home/iceman/Downloads/ubuntu-18.04-desktop-amd64.iso.torrent")
 	if err != nil {
 		fmt.Printf("%s\n", err.Error())
+		os.Exit(1)
 	}
 
 	os.Exit(0)

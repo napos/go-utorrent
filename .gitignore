@@ -1,5 +1,7 @@
-list_torrents
-pause_unpause
-start_stop
-recheck
-add_torrent
+# Ignore example binaries
+/list_torrents
+/pause_unpause
+/start_stop
+/recheck
+/add_torrent
+/delete_torrent

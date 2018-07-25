@@ -26,7 +26,7 @@ func main() {
 	}
 
 	for _, torrent := range torrents {
-		fmt.Printf("Name: %s, Added: %d, Completed: %d, Filepath: %s\n", torrent.Name, torrent.AddedOn, torrent.CompletedOn, torrent.FilePath)
+		fmt.Printf("Hash: %s, Name: %s, Added: %d, Completed: %d, Filepath: %s\n", torrent.Hash, torrent.Name, torrent.AddedOn, torrent.CompletedOn, torrent.FilePath)
 	}
 
 	fmt.Printf("\n")
