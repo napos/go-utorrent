@@ -1,9 +1,15 @@
 package utorrent
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"path/filepath"
 )
 
 type TorrentList struct {
@@ -185,6 +191,40 @@ func (c *Client) AddTorrent(url string) error {
 	if err != nil {
 		return fmt.Errorf("Error adding torrent: %s", err)
 	}
+	if res.StatusCode != 200 {
+		return fmt.Errorf("Error adding torrent: status code: %d", res.StatusCode)
+	}
+
+	return nil
+}
+
+func (c *Client) AddTorrentFile(torrentpath string) error {
+	file, err := os.Open(torrentpath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("torrent_file", filepath.Base(torrentpath))
+	if err != nil {
+		return fmt.Errorf("Error adding torrent: %s", err)
+	}
+	_, err = io.Copy(part, file)
+
+	err = writer.Close()
+	if err != nil {
+		return fmt.Errorf("Error adding torrent: %s", err)
+	}
+
+	header := make(http.Header)
+	header.Set("Content-Type", writer.FormDataContentType())
+	res, err := c.post("/?action=add-file", body.Bytes(), &header)
+	if err != nil {
+		return fmt.Errorf("Error adding torrent: %s", err)
+	}
+
 	if res.StatusCode != 200 {
 		return fmt.Errorf("Error adding torrent: status code: %d", res.StatusCode)
 	}

@@ -2,3 +2,4 @@ list_torrents
 pause_unpause
 start_stop
 recheck
+add_torrent
