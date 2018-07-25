@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 type TorrentList struct {
@@ -227,6 +228,55 @@ func (c *Client) AddTorrentFile(torrentpath string) error {
 
 	if res.StatusCode != 200 {
 		return fmt.Errorf("Error adding torrent: status code: %d", res.StatusCode)
+	}
+
+	return nil
+}
+
+func (c *Client) SetTorrentProperty(hash string, property string, value string) error {
+	res, err := c.get(fmt.Sprintf("/?action=setprops&hash=%s&s=%s&v=%s", hash, property, value), nil)
+	if err != nil {
+		return fmt.Errorf("Error setting torrent (%s) '%s' to '%s': %s ", hash, property, value, err)
+	}
+	if res.StatusCode != 200 {
+		return fmt.Errorf("Error setting torrent (%s) '%s' to '%s' - status code: %d ", hash, property, value, res.StatusCode)
+	}
+
+	return nil
+}
+
+func (c *Client) SetTorrentLabel(hash string, label string) error {
+	err := c.SetTorrentProperty(hash, "label", label)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) SetTorrentSeedRatio(hash string, ratio float64) error {
+	err := c.SetTorrentProperty(hash, "seed_override", "1")
+	if err != nil {
+		return err
+	}
+
+	err = c.SetTorrentProperty(hash, "seed_ratio", strconv.FormatFloat(ratio*10, 'f', 0, 64))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) SetTorrentSeedTime(hash string, time int) error {
+	err := c.SetTorrentProperty(hash, "seed_override", "1")
+	if err != nil {
+		return err
+	}
+
+	err = c.SetTorrentProperty(hash, "seed_time", strconv.FormatInt(int64(time*3600), 10))
+	if err != nil {
+		return err
 	}
 
 	return nil
