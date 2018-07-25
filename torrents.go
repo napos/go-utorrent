@@ -13,6 +13,8 @@ import (
 	"strconv"
 )
 
+// TorrentList is an interface that allows unmarshalling of the
+// uTorrent/Bittorrent api into proper golang compatible Torrent structs.
 type TorrentList struct {
 	Build        int             `json:"build"`
 	RawTorrents  [][]interface{} `json:"torrents"`
@@ -46,6 +48,8 @@ type Torrent struct {
 	FilePath        string `json:"filepath"`
 }
 
+// UnmarshallJSON is a custom unmarshaller for torrent lists. Necessary due to
+// the fact uTorrent/Bittorrent does not implement a proper json api.
 func (torrents *TorrentList) UnmarshalJSON(b []byte) error {
 	type Alias TorrentList
 	rawTorrents := &struct {
@@ -89,6 +93,8 @@ func (torrents *TorrentList) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// GetTorrents returns a list of Torrent structs containing all of the torrents
+// added to the uTorrent/Bittorrent server
 func (c *Client) GetTorrents() ([]Torrent, error) {
 	res, err := c.get("/?list=1", nil)
 	if err != nil {
@@ -109,6 +115,7 @@ func (c *Client) GetTorrents() ([]Torrent, error) {
 	return torrents.Torrents, err
 }
 
+// GetTorrent gets a specific torrent by info hash
 func (c *Client) GetTorrent(hash string) (Torrent, error) {
 	torrents, err := c.GetTorrents()
 	if err != nil {
@@ -124,6 +131,7 @@ func (c *Client) GetTorrent(hash string) (Torrent, error) {
 	return Torrent{}, fmt.Errorf("Torrent [%s] not found", hash)
 }
 
+// PauseTorrent pauses the torrent specified by info hash
 func (c *Client) PauseTorrent(hash string) error {
 	err := c.action("pause", hash, nil)
 	if err != nil {
@@ -133,6 +141,7 @@ func (c *Client) PauseTorrent(hash string) error {
 	return nil
 }
 
+// UnPauseTorrent unpauses the torrent specified by info hash
 func (c *Client) UnPauseTorrent(hash string) error {
 	err := c.action("unpause", hash, nil)
 	if err != nil {
@@ -142,6 +151,7 @@ func (c *Client) UnPauseTorrent(hash string) error {
 	return nil
 }
 
+// StartTorrent starts the torrent specified by info hash
 func (c *Client) StartTorrent(hash string) error {
 	err := c.action("start", hash, nil)
 	if err != nil {
@@ -151,6 +161,7 @@ func (c *Client) StartTorrent(hash string) error {
 	return nil
 }
 
+// StopTorrent stops the torrent specified by info hash
 func (c *Client) StopTorrent(hash string) error {
 	err := c.action("stop", hash, nil)
 	if err != nil {
@@ -160,6 +171,7 @@ func (c *Client) StopTorrent(hash string) error {
 	return nil
 }
 
+// RecheckTorrent rechecks the torrent specified by info hash
 func (c *Client) RecheckTorrent(hash string) error {
 	err := c.action("recheck", hash, nil)
 	if err != nil {
@@ -169,6 +181,7 @@ func (c *Client) RecheckTorrent(hash string) error {
 	return nil
 }
 
+// RemoveTorrent removes the torrent specified by info hash
 func (c *Client) RemoveTorrent(hash string) error {
 	err := c.action("remove", hash, nil)
 	if err != nil {
@@ -178,6 +191,7 @@ func (c *Client) RemoveTorrent(hash string) error {
 	return nil
 }
 
+// RemoveTorrentAndData removes the torrent and associated data specified by info hash
 func (c *Client) RemoveTorrentAndData(hash string) error {
 	err := c.action("removedata", hash, nil)
 	if err != nil {
@@ -187,6 +201,7 @@ func (c *Client) RemoveTorrentAndData(hash string) error {
 	return nil
 }
 
+// AddTorrent adds the torrent specified by url or magnet link
 func (c *Client) AddTorrent(url string) error {
 	res, err := c.get(fmt.Sprintf("/?action=add-url&s=%s", url), nil)
 	if err != nil {
@@ -199,6 +214,7 @@ func (c *Client) AddTorrent(url string) error {
 	return nil
 }
 
+// AddTorrentFile adds the torrent specified by a file on disk
 func (c *Client) AddTorrentFile(torrentpath string) error {
 	file, err := os.Open(torrentpath)
 	if err != nil {
@@ -233,6 +249,7 @@ func (c *Client) AddTorrentFile(torrentpath string) error {
 	return nil
 }
 
+// SetTorrentProperty sets a property for the given torrent.
 func (c *Client) SetTorrentProperty(hash string, property string, value string) error {
 	res, err := c.get(fmt.Sprintf("/?action=setprops&hash=%s&s=%s&v=%s", hash, property, value), nil)
 	if err != nil {
@@ -245,6 +262,7 @@ func (c *Client) SetTorrentProperty(hash string, property string, value string) 
 	return nil
 }
 
+// SetTorrentLabel sets the label for the given torrent
 func (c *Client) SetTorrentLabel(hash string, label string) error {
 	err := c.SetTorrentProperty(hash, "label", label)
 	if err != nil {
@@ -254,6 +272,7 @@ func (c *Client) SetTorrentLabel(hash string, label string) error {
 	return nil
 }
 
+// SetTorrentSeedRatio sets the seed ratio for the given torrent
 func (c *Client) SetTorrentSeedRatio(hash string, ratio float64) error {
 	err := c.SetTorrentProperty(hash, "seed_override", "1")
 	if err != nil {
@@ -268,6 +287,7 @@ func (c *Client) SetTorrentSeedRatio(hash string, ratio float64) error {
 	return nil
 }
 
+// SetTorrentSeedTime sets the seed time for the given torrent
 func (c *Client) SetTorrentSeedTime(hash string, time int) error {
 	err := c.SetTorrentProperty(hash, "seed_override", "1")
 	if err != nil {
@@ -282,6 +302,7 @@ func (c *Client) SetTorrentSeedTime(hash string, time int) error {
 	return nil
 }
 
+// QueueTop sends the torrent to the top of the download queue
 func (c *Client) QueueTop(hash string) error {
 	err := c.action("queuetop", hash, nil)
 	if err != nil {
@@ -291,6 +312,7 @@ func (c *Client) QueueTop(hash string) error {
 	return nil
 }
 
+// QueueUp moves the torrent up the download queue
 func (c *Client) QueueUp(hash string) error {
 	err := c.action("queueup", hash, nil)
 	if err != nil {
@@ -300,6 +322,7 @@ func (c *Client) QueueUp(hash string) error {
 	return nil
 }
 
+// QueueUp moves the torrent down the download queue
 func (c *Client) QueueDown(hash string) error {
 	err := c.action("queuedown", hash, nil)
 	if err != nil {
@@ -309,6 +332,7 @@ func (c *Client) QueueDown(hash string) error {
 	return nil
 }
 
+// QueueTop sends the torrent to the bottom of the download queue
 func (c *Client) QueueBottom(hash string) error {
 	err := c.action("queuebottom", hash, nil)
 	if err != nil {
