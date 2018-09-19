@@ -27,4 +27,8 @@ fixmes: fixme
 fixme:
 	@grep -rn FIXME * | grep -v vendor/ | grep -v README.md | grep --color FIXME || echo "No FIXMES!  YAY!"
 
+todos: todo
+todo:
+	@grep -rn TODO * | grep -v vendor/ | grep -v README.md | grep --color TODO || echo "No TODOS!  YAY!"
+	
 .PHONY: examples clean

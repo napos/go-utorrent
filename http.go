@@ -67,7 +67,7 @@ func (c *Client) action(action string, hash string, headers *http.Header) error 
 		return err
 	}
 	if res.StatusCode != 200 {
-		return fmt.Errorf("status code: %d", res.StatusCode)
+		return fmt.Errorf("error status: %s", res.Status)
 	}
 	return nil
 }
